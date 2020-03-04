@@ -1,0 +1,18 @@
+---
+- hosts: prod
+  name: "Test Pozos API"
+  become: true
+  vars_files:
+    - "files/secrets/devops.yml"
+  tasks:
+  - name: Check that you can connect (GET) to a page and it returns a status 200
+    uri:
+      url: http://{{ inventory_hostname }}
+
+
+  - name: Check webservice
+    uri:
+      url: http://{{ inventory_hostname }}:{{ api_port }}/pozos/api/v1.0/get_student_ages
+      user: "{{ api_username }}"
+      password: "{{ api_password }}"
+      method: GET

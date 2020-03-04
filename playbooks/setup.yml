@@ -1,0 +1,35 @@
+---
+- hosts: prod
+  vars_files:
+    - "files/secrets/devops.yml"
+  vars:
+    ansible_user: centos
+    ansible_ssh_pass: centos
+    ansible_sudo_pass: centos
+  tasks:
+    - name: Create devops user
+      become: true
+      user:
+        name: devops
+        comment: devops User
+        groups: "{% if ansible_distribution == 'CentOS' or ansible_distribution == 'Archlinux' %}wheel{% else %}sudo{% endif %}"
+        append: true
+        password: "{{ devops_user_password_hash }}"
+
+    - name: Create .ssh directory
+      become: true
+      file:
+        path: /home/devops/.ssh
+        state: directory
+        owner: devops
+        group: devops
+        mode: 0700
+
+    - name: Copy authorised keys
+      become: true
+      copy:
+        src: devops_authorized_keys
+        dest: /home/devops/.ssh/authorized_keys
+        owner: devops
+        group: devops
+        mode: 0600
