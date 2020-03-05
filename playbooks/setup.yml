@@ -3,10 +3,18 @@
   vars_files:
     - "files/secrets/devops.yml"
   vars:
-    ansible_user: centos
-    ansible_ssh_pass: centos
-    ansible_sudo_pass: centos
+    ansible_user: debian
+    ansible_ssh_pass: debian
+    ansible_sudo_pass: debian
   tasks:
+    - name: Install some usefull dependencies
+      become: true
+      package:
+        name: python-pip
+    - name: Install python-apt (https://github.com/ansible/ansible/issues/14468)
+      become: true
+      package:
+        name: python-apt
     - name: Create devops user
       become: true
       user:

@@ -3,6 +3,13 @@
   name: "Deploy Pozos API "
   become: true
   tags: deploy-pozos
+  handlers:
+    - name: "Restart apache"
+      become: true
+      service:
+        name: "apache2"
+        state: "restarted"
+
   vars_files:
     - "files/secrets/devops.yml"
   tasks:
@@ -12,7 +19,7 @@
 
   - name: "Install dependencies and apache server"
     apt :
-      name: python-dev,python3-dev,libsasl2-dev,libldap2-dev,libssl-dev,python-pip,apache2,php
+      name: python-pkg-resources,python-dev,python3-dev,libsasl2-dev,libldap2-dev,libssl-dev,python-pip,apache2,php
 
   - name: "Install python library dependencies"
     pip:
@@ -62,15 +69,16 @@
       state: "started"
       enabled: "yes"
 
+  - name: "Remove default page"
+    file:
+      path: /var/www/html/index.html  
+      state: absent 
 
   - name: "Push html source code"
     template:
       src: "templates/index.php.j2"
       dest: "/var/www/html/index.php"
-#  handlers:
-#  - name: "Restart apache server if needed"
-#    service: "httpd"
-#    state: "restarted"
+    notify: "Restart apache" 
 
   - name: "Recursively change ownership of a webroot directory"
     file:
@@ -79,9 +87,3 @@
       recurse: yes
       owner: www-data
       group: www-data
-
-  - name: "Start apache server"
-    service:
-      name: "apache2"
-      state: "started"
-      enabled: "yes"
