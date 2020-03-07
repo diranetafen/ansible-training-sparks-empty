@@ -1,7 +1,0 @@
-ansible_user: "devops"
-api: "127.0.0.1"
-api_port: "5000"
-api_username: "{{ vault_api_username }}"
-api_password: "{{ vault_api_password }}"
-devops_user_password_hash: "{{ vault_devops_user_password_hash  }}"
-ansible_sudo_pass: "{{ vault_ansible_sudo_pass }}"
